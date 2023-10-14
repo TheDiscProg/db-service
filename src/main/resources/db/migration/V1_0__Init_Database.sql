@@ -8,14 +8,16 @@ CREATE TABLE IF NOT EXISTS customer (
     forename VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    PRMARY KEY(id)
+    PRMARY KEY(id),
+    UNIQUE (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS user(
     id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())),
     customer_id BINARY(16),
     username VARCHAR(100),
-    password VARCHAR(128).
+    password VARCHAR(128),
+    enabled BOOLEAN NOT NULL DEFAULT 1,
     PRIMARY KEY(id),
     FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASECASE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

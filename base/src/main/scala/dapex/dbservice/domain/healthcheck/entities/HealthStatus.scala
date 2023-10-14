@@ -1,4 +1,4 @@
-package dapex.dbwriter.domain.healthcheck.entities
+package dapex.dbservice.domain.healthcheck.entities
 
 sealed trait HealthStatus
 

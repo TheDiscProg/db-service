@@ -5,20 +5,16 @@ import cats.effect.{Async, Resource}
 import cats.{Monad, MonadError, Parallel}
 import com.comcast.ip4s._
 import dapex.config.ServerConfiguration
-import dapex.dbwriter.domain.db.migration.FlywayDatabaseMigrator
-import dapex.guardrail.healthcheck.HealthcheckResource
-import dapex.dbwriter.domain.healthcheck.{
-  HealthCheckService,
-  HealthChecker,
-  HealthcheckAPIHandler,
-  SelfHealthCheck
-}
-import dapex.dbwriter.entities.{AppService, MysqlConfig}
+import dapex.dbservice.domain.db.connector.DbTransactor
+import dapex.dbservice.domain.db.migration.FlywayDatabaseMigrator
+import dapex.dbservice.domain.healthcheck.{HealthCheckService, HealthChecker, HealthcheckAPIHandler, SelfHealthCheck}
+import dapex.dbservice.entities.{AppService, MysqlConfig}
 import io.circe.config.parser
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.middleware.Logger
 import org.typelevel.log4cats.{Logger => Log4CatsLogger}
+import dapex.guardrail.healthcheck._
 
 object AppServer {
 
@@ -29,16 +25,18 @@ object AppServer {
     for {
       conf <- Resource.eval(parser.decodePathF[F, ServerConfiguration](path = "server"))
 
-      // Database migration
-      dbMigrator = new FlywayDatabaseMigrator(MysqlConfig.fromOption(conf.db))
-      _ = dbMigrator.migrateDatabase()
-
       // Health checkers
       checkers = NonEmptyList.of[HealthChecker[F]](SelfHealthCheck[F])
       healthCheckers = HealthCheckService(checkers)
       healthRoutes = new HealthcheckResource().routes(
         new HealthcheckAPIHandler[F](healthCheckers)
       )
+
+      // Database migration
+      dbConfig = MysqlConfig.fromOption(conf.db)
+      dbMigrator = new FlywayDatabaseMigrator(dbConfig)
+      _ = dbMigrator.migrateDatabase()
+      xa <- DbTransactor.getDatabaseTransactor(dbConfig)
 
       // Routes and HTTP App
       allRoutes = healthRoutes.orNotFound

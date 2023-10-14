@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Dependencies.all,
   resolvers += Resolver.githubPackages("TheDiscProg"),
   githubOwner := "TheDiscProg",
-  githubRepository := "db-writer",
+  githubRepository := "db-service",
   addCompilerPlugin(
     ("org.typelevel" %% "kind-projector" % "0.13.2").cross(CrossVersion.full)
   ),
@@ -20,7 +20,7 @@ lazy val base = (project in file("base"))
   .configs(IntegrationTest)
   .settings(
     commonSettings,
-    name := "base",
+    name := "db-service-base",
     scalacOptions ++= Scalac.options,
     coverageExcludedPackages := Seq(
       "<empty>",
@@ -32,7 +32,7 @@ lazy val guardrail = (project in file("guardrail"))
   .configs(IntegrationTest)
   .settings(
     commonSettings,
-    name := "guardrail",
+    name := "db-service-guardrail",
     Compile / guardrailTasks := List(
       ScalaServer(
         file("swagger.yaml"),
@@ -61,7 +61,7 @@ lazy val root = (project in file("."))
   )
   .settings(
     commonSettings,
-    name := "db-writer",
+    name := "db-service",
     Compile / doc / sources := Seq.empty,
     scalacOptions ++= Scalac.options,
     coverageExcludedPackages := Seq(
@@ -76,17 +76,17 @@ lazy val root = (project in file("."))
     coverageMinimumStmtTotal := 92,
     coverageMinimumBranchTotal := 100,
     Compile / mainClass := Some("dapex.MainApp"),
-    Docker / packageName := "db-writer",
+    Docker / packageName := "db-service",
     Docker / dockerUsername := Some("ramindur"),
-    Docker / defaultLinuxInstallLocation := "/opt/db-writer",
+    Docker / defaultLinuxInstallLocation := "/opt/db-service",
     dockerBaseImage := "eclipse-temurin:17-jdk-jammy",
     dockerExposedPorts ++= Seq(8004),
     dockerExposedVolumes := Seq("/opt/docker/.logs", "/opt/docker/.keys"),
     Defaults.itSettings
   )
-  .aggregate(base, guardrail)
   .dependsOn(base % "test->test; compile->compile")
   .dependsOn(guardrail % "test->test; compile->compile")
+  .aggregate(base, guardrail)
 
 // Put here as database repository tests may hang but remove for none db applications
 parallelExecution := false

@@ -1,4 +1,4 @@
-package dapex.dbwriter.entities
+package dapex.dbservice.entities
 
 import com.zaxxer.hikari.HikariConfig
 import dapex.config.DatabaseConfig

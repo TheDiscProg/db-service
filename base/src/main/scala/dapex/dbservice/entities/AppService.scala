@@ -1,4 +1,4 @@
-package dapex.dbwriter.entities
+package dapex.dbservice.entities
 
 import org.http4s.server.Server
 

@@ -1,9 +1,9 @@
-package dapex.dbwriter.domain.healthcheck
+package dapex.dbservice.domain.healthcheck
 
 import cats.data.NonEmptyList
 import cats.syntax.all._
 import cats.{Monad, Parallel}
-import dapex.dbwriter.domain.healthcheck.entities.{HealthCheckStatus, HealthStatus}
+import dapex.dbservice.domain.healthcheck.entities.{HealthCheckStatus, HealthStatus}
 import org.typelevel.log4cats.Logger
 
 class HealthCheckService[F[_]: Monad: Parallel: Logger](checkers: NonEmptyList[HealthChecker[F]])
