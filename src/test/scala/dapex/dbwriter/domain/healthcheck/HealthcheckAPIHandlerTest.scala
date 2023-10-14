@@ -1,10 +1,10 @@
-package dapex.server.domain.healthcheck
+package dapex.dbwriter.domain.healthcheck
 
 import cats.Id
 import cats.data.NonEmptyList
 import dapex.guardrail.definitions.HealthResponse
 import dapex.guardrail.healthcheck.HealthcheckResource.HealthcheckResponse
-import dapex.server.domain.healthcheck.entities.{
+import dapex.dbwriter.domain.healthcheck.entities.{
   HealthCheckStatus,
   HealthCheckerResponse,
   HealthStatus

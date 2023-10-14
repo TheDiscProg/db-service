@@ -1,4 +1,4 @@
-package dapex.server.domain.healthcheck.entities
+package dapex.dbwriter.domain.healthcheck.entities
 
 import cats.data.NonEmptyList
 

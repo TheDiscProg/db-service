@@ -1,12 +1,12 @@
-package dapex.server.domain.healthcheck
+package dapex.dbwriter.domain.healthcheck
 
 import cats.Functor
 import cats.implicits._
 import dapex.guardrail.definitions.HealthResponse
 import dapex.guardrail.healthcheck.HealthcheckHandler
 import dapex.guardrail.healthcheck.HealthcheckResource.HealthcheckResponse
-import dapex.server.domain.healthcheck.entities.HealthCheckStatus
-import dapex.server.domain.healthcheck.entities.HealthStatus.OK
+import dapex.dbwriter.domain.healthcheck.entities.HealthCheckStatus
+import dapex.dbwriter.domain.healthcheck.entities.HealthStatus.OK
 
 class HealthcheckAPIHandler[F[_]: Functor](checker: HealthCheckAlgebra[F])
     extends HealthcheckHandler[F] {

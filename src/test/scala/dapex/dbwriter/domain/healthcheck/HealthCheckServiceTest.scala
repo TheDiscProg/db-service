@@ -1,8 +1,8 @@
-package dapex.server.domain.healthcheck
+package dapex.dbwriter.domain.healthcheck
 
 import cats.data.NonEmptyList
 import cats.effect.IO
-import dapex.server.domain.healthcheck.entities.{
+import dapex.dbwriter.domain.healthcheck.entities.{
   HealthCheckStatus,
   HealthCheckerResponse,
   HealthStatus

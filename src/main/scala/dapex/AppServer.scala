@@ -5,18 +5,18 @@ import cats.effect.{Async, Resource}
 import cats.{Monad, MonadError, Parallel}
 import com.comcast.ip4s._
 import dapex.config.ServerConfiguration
+import dapex.dbwriter.domain.db.migration.FlywayDatabaseMigrator
 import dapex.guardrail.healthcheck.HealthcheckResource
-import dapex.server.domain.healthcheck.{
+import dapex.dbwriter.domain.healthcheck.{
   HealthCheckService,
   HealthChecker,
   HealthcheckAPIHandler,
   SelfHealthCheck
 }
-import dapex.server.entities.AppService
+import dapex.dbwriter.entities.{AppService, MysqlConfig}
 import io.circe.config.parser
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
-import org.http4s.server.Server
 import org.http4s.server.middleware.Logger
 import org.typelevel.log4cats.{Logger => Log4CatsLogger}
 
@@ -29,6 +29,10 @@ object AppServer {
     for {
       conf <- Resource.eval(parser.decodePathF[F, ServerConfiguration](path = "server"))
 
+      // Database migration
+      dbMigrator = new FlywayDatabaseMigrator(MysqlConfig.fromOption(conf.db))
+      _ = dbMigrator.migrateDatabase()
+
       // Health checkers
       checkers = NonEmptyList.of[HealthChecker[F]](SelfHealthCheck[F])
       healthCheckers = HealthCheckService(checkers)
@@ -40,7 +44,7 @@ object AppServer {
       allRoutes = healthRoutes.orNotFound
       httpApp = Logger.httpApp(logHeaders = true, logBody = true)(allRoutes)
 
-      // Build server
+      // Build HTTP Server
       httpPort = Port.fromInt(conf.http.port.value)
       httpHost = Ipv4Address.fromString(conf.http.host.value)
       server <- EmberServerBuilder.default

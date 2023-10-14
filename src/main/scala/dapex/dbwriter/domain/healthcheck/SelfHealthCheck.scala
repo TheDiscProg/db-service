@@ -1,7 +1,7 @@
-package dapex.server.domain.healthcheck
+package dapex.dbwriter.domain.healthcheck
 
 import cats.Applicative
-import dapex.server.domain.healthcheck.entities.{HealthCheckerResponse, HealthStatus}
+import dapex.dbwriter.domain.healthcheck.entities.{HealthCheckerResponse, HealthStatus}
 
 class SelfHealthCheck[F[_]: Applicative] extends HealthChecker[F] {
 

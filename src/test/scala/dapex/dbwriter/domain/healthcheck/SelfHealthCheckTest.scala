@@ -1,7 +1,7 @@
-package dapex.server.domain.healthcheck
+package dapex.dbwriter.domain.healthcheck
 
 import cats.Id
-import dapex.server.domain.healthcheck.entities.{HealthCheckerResponse, HealthStatus}
+import dapex.dbwriter.domain.healthcheck.entities.{HealthCheckerResponse, HealthStatus}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 

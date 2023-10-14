@@ -12,7 +12,7 @@ object MainApp extends IOApp {
       .use { implicit logger: Logger[IO] =>
         AppServer
           .createServer[IO]()
-          .use(appService => IO.never) //For simple HTTP server, not used
+          .use(appService => IO.never) //For simple HTTP dbwriter, not used
           .as(ExitCode.Success)
       }
 }
