@@ -21,16 +21,20 @@ object Dependencies {
     "org.typelevel" %% "log4cats-core" % "2.6.0",
     "org.typelevel" %% "log4cats-slf4j" % "2.6.0",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
-    "org.tpolecat" %% "doobie-scalatest" % "1.0.0-RC4" % Test,
+    "org.tpolecat" %% "doobie-scalatest" % "1.0.0-RC4" % "test",
     "org.tpolecat" %% "doobie-core" % "1.0.0-RC4",
     "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC4",
     "com.mysql" % "mysql-connector-j" % "8.1.0",
     "org.flywaydb" % "flyway-mysql" % "9.22.2",
     "io.scalaland" %% "chimney" % "0.7.5",
-    "org.typelevel" %% "munit-cats-effect-2" % "1.0.7" % "test,it",
+    "org.typelevel" %% "munit-cats-effect-2" % "1.0.7" % "test",
     "org.scalactic" %% "scalactic" % "3.2.15",
-    "org.scalatest" %% "scalatest" % "3.2.15" % "test,it",
-    "org.scalatestplus" %% "mockito-4-6" % "3.2.15.0" % Test,
-    "org.testcontainers" % "mysql" % "1.19.1" % IntegrationTest
+    "org.scalatest" %% "scalatest" % "3.2.15" % "test",
+    "org.scalatestplus" %% "mockito-4-6" % "3.2.15.0" % "test"
+  )
+
+  lazy val it = Seq(
+    "ch.qos.logback" % "logback-classic" % "1.4.11",
+    "org.testcontainers" % "mysql" % "1.19.1"
   )
 }

@@ -7,14 +7,20 @@ import com.comcast.ip4s._
 import dapex.config.ServerConfiguration
 import dapex.dbservice.domain.db.connector.DbTransactor
 import dapex.dbservice.domain.db.migration.FlywayDatabaseMigrator
-import dapex.dbservice.domain.healthcheck.{HealthCheckService, HealthChecker, HealthcheckAPIHandler, SelfHealthCheck}
+import dapex.dbservice.domain.db.repository.{CustomerRepository, UserRepository}
+import dapex.dbservice.domain.healthcheck.{
+  HealthCheckService,
+  HealthChecker,
+  HealthcheckAPIHandler,
+  SelfHealthCheck
+}
 import dapex.dbservice.entities.{AppService, MysqlConfig}
 import io.circe.config.parser
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.middleware.Logger
 import org.typelevel.log4cats.{Logger => Log4CatsLogger}
-import dapex.guardrail.healthcheck._
+import dapex.guardrail.healthcheck.HealthcheckResource
 
 object AppServer {
 
@@ -37,6 +43,9 @@ object AppServer {
       dbMigrator = new FlywayDatabaseMigrator(dbConfig)
       _ = dbMigrator.migrateDatabase()
       xa <- DbTransactor.getDatabaseTransactor(dbConfig)
+      // Database repositories
+      customerRepository = new CustomerRepository[F](xa)
+      userRepository = new UserRepository[F](xa)
 
       // Routes and HTTP App
       allRoutes = healthRoutes.orNotFound

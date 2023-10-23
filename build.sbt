@@ -5,6 +5,7 @@ ThisBuild / version := "0.1.0"
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.10",
   libraryDependencies ++= Dependencies.all,
+  scalacOptions ++= Scalac.options,
   resolvers += Resolver.githubPackages("TheDiscProg"),
   githubOwner := "TheDiscProg",
   githubRepository := "db-service",
@@ -17,19 +18,16 @@ lazy val commonSettings = Seq(
 )
 
 lazy val base = (project in file("base"))
-  .configs(IntegrationTest)
   .settings(
     commonSettings,
     name := "db-service-base",
-    scalacOptions ++= Scalac.options,
     coverageExcludedPackages := Seq(
       "<empty>",
       ".*.entities.*"
-    ).mkString(";"),
+    ).mkString(";")
   )
 
 lazy val guardrail = (project in file("guardrail"))
-  .configs(IntegrationTest)
   .settings(
     commonSettings,
     name := "db-service-guardrail",
@@ -52,7 +50,6 @@ lazy val guardrail = (project in file("guardrail"))
   .dependsOn(base % "test->test; compile->compile")
 
 lazy val root = (project in file("."))
-  .configs(IntegrationTest)
   .enablePlugins(
     ScalafmtPlugin,
     JavaAppPackaging,
@@ -81,17 +78,32 @@ lazy val root = (project in file("."))
     Docker / defaultLinuxInstallLocation := "/opt/db-service",
     dockerBaseImage := "eclipse-temurin:17-jdk-jammy",
     dockerExposedPorts ++= Seq(8004),
-    dockerExposedVolumes := Seq("/opt/docker/.logs", "/opt/docker/.keys"),
-    Defaults.itSettings
+    dockerExposedVolumes := Seq("/opt/docker/.logs", "/opt/docker/.keys")
   )
   .dependsOn(base % "test->test; compile->compile")
   .dependsOn(guardrail % "test->test; compile->compile")
   .aggregate(base, guardrail)
 
+lazy val integrationTest = (project in file("it"))
+  .enablePlugins(ScalafmtPlugin)
+  .settings(
+    commonSettings,
+    name := "db-service-integration-test",
+    publish / skip := true,
+    libraryDependencies ++= Dependencies.it,
+    parallelExecution := false
+  )
+  .dependsOn(base % "test->test; compile->compile")
+  .dependsOn(guardrail % "test->test; compile->compile")
+  .dependsOn(root % "test->test; compile->compile")
+  .aggregate(base, guardrail, root)
+
 // Put here as database repository tests may hang but remove for none db applications
 parallelExecution := false
 
-addCommandAlias("formatAll", ";scalafmt;test:scalafmt;it:scalafmt;")
-addCommandAlias("testAll", ";clean;test;it:test;")
+addCommandAlias("formatAll", ";scalafmt;test:scalafmt;integrationTest/test:scalafmt;")
+addCommandAlias("testAll", ";clean;integrationTest/clean;test;integrationTest/test;")
+addCommandAlias("cleanAll", ";clean;integrationTest/clean")
+addCommandAlias("itTest", ";integrationTest/clean;integrationTest/test")
 addCommandAlias("clntst", ";clean;scalafmt;test:scalafmt;test;")
-addCommandAlias("cvrtst", ";clean;scalafmt;test:scalafmt;coverage;test;coverageReport;")
+addCommandAlias("cvrtst", ";clean;integrationTest/clean;scalafmt;integrationTest/test:scalafmt;test:scalafmt;coverage;test;integrationTest/test;coverageReport;")
